@@ -1,16 +1,5 @@
 # Lemono Agent
 
-> Build, Deploy, and Scale AI Agents in Minutes.
+AI API integrated (OpenAI/Grok etc. placeholder)
 
-Open-source platform for AI Agents.
-
-## Features
-- Multi LLM
-- Browser Agent
-- Workflow Builder
-
-## Quick Start
-1. Clone
-2. docker compose up
-
-MIT License
+Run backend: cd apps/api && pip install -r requirements.txt && uvicorn main:app
