@@ -1,3 +1,7 @@
 fastapi
 uvicorn
 python-dotenv
+google-generativeai
+langgraph
+langchain
+langchain-community
