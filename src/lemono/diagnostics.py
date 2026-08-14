@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import shutil
+import sqlite3
 
 from .config import Settings
 from .memory import MemoryStore
@@ -16,7 +17,7 @@ class Diagnostics:
         checks: list[DiagnosticCheck] = []
         try:
             db_ok = self.memory.ping()
-        except Exception as exc:
+        except sqlite3.Error as exc:
             checks.append(DiagnosticCheck(name="memory", status="error", detail=type(exc).__name__, remediation="Check LEMONO_DATA_DIR permissions."))
         else:
             checks.append(DiagnosticCheck(name="memory", status="ok" if db_ok else "error", detail=str(self.settings.database_path)))
@@ -37,4 +38,3 @@ class Diagnostics:
         else:
             status = "healthy"
         return DiagnosticReport(status=status, checks=checks)
-

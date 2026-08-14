@@ -1,8 +1,8 @@
 from __future__ import annotations
 
-import os
 import asyncio
 import json
+import os
 from abc import ABC, abstractmethod
 from urllib.error import HTTPError, URLError
 from urllib.parse import urlencode
@@ -21,7 +21,7 @@ def _post_json(url: str, payload: dict, headers: dict[str, str], timeout: float)
         method="POST",
     )
     try:
-        with urlopen(request, timeout=timeout) as response:  # noqa: S310 - provider URLs are fixed by operators
+        with urlopen(request, timeout=timeout) as response:
             return json.loads(response.read().decode("utf-8"))
     except HTTPError as exc:
         raise ProviderError(f"provider returned HTTP {exc.code}") from exc
