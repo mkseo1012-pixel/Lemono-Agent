@@ -13,36 +13,133 @@ Lemono is a local-first personal AI agent that remembers, checks its own health,
 
 The design takes inspiration from the public ideas behind Hermes Agent—persistent memory, learning loops, self-hosting, skills, gateways, and automation—while remaining an independent implementation. The current milestone deliberately focuses on a small, auditable core.
 
-## Quick start
+## 설치 방법 (한국어)
+
+### 요구 사항
+
+- Python 3.11 이상 또는 Docker
+- OpenAI, xAI, Anthropic, Google 중 하나 이상의 API 키
+
+### 로컬 설치
 
 ```bash
+git clone https://github.com/mkseo1012-pixel/Lemono-Agent.git
+cd Lemono-Agent
+
 python -m venv .venv
+# macOS / Linux
 source .venv/bin/activate
-pip install -e '.[dev]'
+# Windows PowerShell: .venv\Scripts\Activate.ps1
+
+pip install -e .
 cp .env.example .env
-# Add at least one API key to .env
-lemono --doctor
-lemono --provider claude
 ```
 
-Run the API:
+`.env` 파일을 열어 사용할 공급자의 키를 하나 이상 입력하세요.
+
+```dotenv
+OPENAI_API_KEY=your_key_here
+# XAI_API_KEY=your_key_here
+# ANTHROPIC_API_KEY=your_key_here
+# GEMINI_API_KEY=your_key_here
+```
+
+설정을 진단하고 CLI를 실행합니다.
 
 ```bash
-uvicorn lemono.api:app --reload
+lemono --doctor
+lemono --provider openai
+# 예: lemono --provider claude --model claude-sonnet-4-5
+```
+
+REST API 서버를 실행하려면:
+
+```bash
+uvicorn lemono.api:app --host 127.0.0.1 --port 8000
 curl http://localhost:8000/v1/diagnostics
 curl -X POST http://localhost:8000/v1/chat \
   -H 'content-type: application/json' \
   -d '{"user_id":"local","message":"답변은 간결하게 해줘"}'
 ```
 
-Or use Docker:
+API 문서는 `http://localhost:8000/docs`에서 볼 수 있습니다. 외부에 공개할 때는 반드시 인증 기능이 있는 리버스 프록시 뒤에 배치하세요.
+
+### Docker로 설치
 
 ```bash
+git clone https://github.com/mkseo1012-pixel/Lemono-Agent.git
+cd Lemono-Agent
 cp .env.example .env
-docker compose up --build
+# .env에 API 키를 입력한 다음 실행합니다.
+docker compose up --build -d
+curl http://localhost:8000/v1/diagnostics
 ```
 
-OpenAPI documentation is available at `http://localhost:8000/docs`.
+중지하려면 `docker compose down`을 실행합니다. 기억 데이터는 `lemono-data` Docker 볼륨에 유지됩니다.
+
+## Installation (English)
+
+### Requirements
+
+- Python 3.11 or newer, or Docker
+- At least one API key from OpenAI, xAI, Anthropic, or Google
+
+### Local installation
+
+```bash
+git clone https://github.com/mkseo1012-pixel/Lemono-Agent.git
+cd Lemono-Agent
+
+python -m venv .venv
+# macOS / Linux
+source .venv/bin/activate
+# Windows PowerShell: .venv\Scripts\Activate.ps1
+
+pip install -e .
+cp .env.example .env
+```
+
+Open `.env` and add at least one provider key:
+
+```dotenv
+OPENAI_API_KEY=your_key_here
+# XAI_API_KEY=your_key_here
+# ANTHROPIC_API_KEY=your_key_here
+# GEMINI_API_KEY=your_key_here
+```
+
+Check the installation and start the CLI:
+
+```bash
+lemono --doctor
+lemono --provider openai
+# Example: lemono --provider claude --model claude-sonnet-4-5
+```
+
+To run the REST API:
+
+```bash
+uvicorn lemono.api:app --host 127.0.0.1 --port 8000
+curl http://localhost:8000/v1/diagnostics
+curl -X POST http://localhost:8000/v1/chat \
+  -H 'content-type: application/json' \
+  -d '{"user_id":"local","message":"Keep the answer concise"}'
+```
+
+OpenAPI documentation is available at `http://localhost:8000/docs`. If you expose the service publicly, place it behind an authenticated reverse proxy.
+
+### Docker installation
+
+```bash
+git clone https://github.com/mkseo1012-pixel/Lemono-Agent.git
+cd Lemono-Agent
+cp .env.example .env
+# Add an API key to .env before starting.
+docker compose up --build -d
+curl http://localhost:8000/v1/diagnostics
+```
+
+Run `docker compose down` to stop the service. Memory remains in the `lemono-data` Docker volume.
 
 ## Provider configuration
 
