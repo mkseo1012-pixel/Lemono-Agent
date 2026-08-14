@@ -1,7 +1,10 @@
 import tempfile
 import unittest
+import os
+from contextlib import chdir
 from pathlib import Path
 
+from lemono.config import Settings
 from lemono.evolution import PreferenceLearner
 from lemono.memory import MemoryStore
 
@@ -33,3 +36,16 @@ class MemoryTests(unittest.TestCase):
         self.assertEqual(self.store.delete_user("alice"), 1)
         self.assertEqual(self.store.recent("alice"), [])
         self.assertEqual(len(self.store.recent("bob")), 1)
+
+    def test_settings_load_dotenv(self):
+        env_file = Path(self.temp.name) / ".env"
+        env_file.write_text("LEMONO_DEFAULT_PROVIDER=gemini\n", encoding="utf-8")
+        previous = os.environ.pop("LEMONO_DEFAULT_PROVIDER", None)
+        try:
+            with chdir(self.temp.name):
+                settings = Settings()
+            self.assertEqual(settings.default_provider, "gemini")
+        finally:
+            os.environ.pop("LEMONO_DEFAULT_PROVIDER", None)
+            if previous is not None:
+                os.environ["LEMONO_DEFAULT_PROVIDER"] = previous

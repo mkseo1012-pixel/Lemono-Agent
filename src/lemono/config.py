@@ -7,6 +7,20 @@ from typing import Any
 from pydantic import BaseModel, ConfigDict, Field
 
 
+def _load_dotenv(path: Path = Path(".env")) -> None:
+    """Load a minimal KEY=VALUE file without overriding the process environment."""
+    if not path.is_file():
+        return
+    for raw_line in path.read_text(encoding="utf-8").splitlines():
+        line = raw_line.strip()
+        if not line or line.startswith("#") or "=" not in line:
+            continue
+        key, value = line.split("=", 1)
+        key = key.strip()
+        if key.replace("_", "").isalnum():
+            os.environ.setdefault(key, value.strip().strip("'\""))
+
+
 class Settings(BaseModel):
     model_config = ConfigDict(extra="ignore")
 
@@ -20,6 +34,7 @@ class Settings(BaseModel):
     allowed_origins: str = "http://localhost:3000,http://localhost:5173"
 
     def __init__(self, **data: Any):
+        _load_dotenv()
         fields = type(self).model_fields
         for name, field in fields.items():
             env_name = f"LEMONO_{name.upper()}"
