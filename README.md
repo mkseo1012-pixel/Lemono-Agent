@@ -2,6 +2,16 @@
 
 Lemono is a local-first personal AI agent that remembers, checks its own health, and adapts to each user without silently rewriting its code or expanding its permissions.
 
+## One-line install / 원라인 설치
+
+macOS, Linux, WSL 터미널에서 아래 명령 하나로 설치하고 설정할 수 있습니다. Install and configure Lemono on macOS, Linux, or WSL with one command:
+
+```bash
+curl -fsSL https://raw.githubusercontent.com/mkseo1012-pixel/Lemono-Agent/main/scripts/install.sh | bash
+```
+
+설정을 다시 변경하려면 `lemono setup`을 실행하세요. Run `lemono setup` whenever you want to change providers, models, or API keys.
+
 ## MVP features
 
 - **Multi-model routing:** OpenAI/Codex, xAI Grok, Anthropic Claude, and Google Gemini behind one interface
