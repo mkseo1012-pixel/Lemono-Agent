@@ -27,3 +27,24 @@ jobs:
         run: |
           bash scripts/install.sh
           "${LEMONO_BIN_DIR}/lemono" --doctor
+  windows-installer:
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - name: Validate PowerShell installer syntax
+        shell: pwsh
+        run: '[void][ScriptBlock]::Create((Get-Content scripts/install.ps1 -Raw))'
+      - name: Smoke test native Windows installer
+        shell: pwsh
+        env:
+          LEMONO_REPOSITORY: ${{ github.repository }}
+          LEMONO_REF: ${{ github.head_ref || github.ref_name }}
+          LEMONO_INSTALL_DIR: ${{ runner.temp }}\lemono-install
+          LEMONO_BIN_DIR: ${{ runner.temp }}\lemono-bin
+          LEMONO_NO_SETUP: "1"
+        run: |
+          & scripts/install.ps1
+          & "$env:LEMONO_BIN_DIR\lemono.cmd" --doctor

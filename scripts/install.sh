@@ -5,19 +5,79 @@ REPOSITORY_URL="${LEMONO_REPOSITORY_URL:-https://github.com/mkseo1012-pixel/Lemo
 INSTALL_ROOT="${LEMONO_INSTALL_DIR:-${HOME}/.local/share/lemono-agent}"
 BIN_DIR="${LEMONO_BIN_DIR:-${HOME}/.local/bin}"
 REF="${LEMONO_REF:-main}"
-PYTHON_BIN="${PYTHON_BIN:-python3}"
+PYTHON_BIN="${PYTHON_BIN:-}"
 
 fail() {
   printf 'Lemono install error: %s\n' "$1" >&2
   exit 1
 }
 
-command -v git >/dev/null 2>&1 || fail "git is required"
-command -v "${PYTHON_BIN}" >/dev/null 2>&1 || fail "Python 3.11+ is required"
-"${PYTHON_BIN}" - <<'PY' || fail "Python 3.11+ is required"
+python_is_supported() {
+  command -v "$1" >/dev/null 2>&1 && "$1" - <<'PY' >/dev/null 2>&1
 import sys
 raise SystemExit(0 if sys.version_info >= (3, 11) else 1)
 PY
+}
+
+find_python() {
+  local candidate
+  if [[ -n "${PYTHON_BIN}" ]]; then
+    python_is_supported "${PYTHON_BIN}" || fail "PYTHON_BIN must point to Python 3.11+"
+    return
+  fi
+  for candidate in python3.13 python3.12 python3.11 python3; do
+    if python_is_supported "${candidate}"; then
+      PYTHON_BIN="${candidate}"
+      return
+    fi
+  done
+  return 1
+}
+
+as_root() {
+  if [[ "$(id -u)" -eq 0 ]]; then
+    "$@"
+  elif command -v sudo >/dev/null 2>&1; then
+    sudo "$@"
+  else
+    fail "administrator access is required to install prerequisites"
+  fi
+}
+
+install_prerequisites() {
+  printf 'Installing required Git, Python 3.11+, and venv support...\n'
+  if command -v apt-get >/dev/null 2>&1; then
+    as_root apt-get update
+    as_root apt-get install -y git python3 python3-venv
+    if ! find_python; then
+      local version
+      for version in 3.13 3.12 3.11; do
+        if apt-cache show "python${version}" >/dev/null 2>&1; then
+          as_root apt-get install -y "python${version}" "python${version}-venv"
+          break
+        fi
+      done
+    fi
+  elif command -v dnf >/dev/null 2>&1; then
+    as_root dnf install -y git python3
+  elif command -v yum >/dev/null 2>&1; then
+    as_root yum install -y git python3
+  elif command -v pacman >/dev/null 2>&1; then
+    as_root pacman -Sy --needed --noconfirm git python
+  elif command -v apk >/dev/null 2>&1; then
+    as_root apk add git python3 py3-pip
+  elif command -v brew >/dev/null 2>&1; then
+    brew install git python@3.12
+  else
+    fail "no supported package manager found; install Git and Python 3.11+ manually"
+  fi
+}
+
+if ! command -v git >/dev/null 2>&1 || ! find_python; then
+  install_prerequisites
+fi
+command -v git >/dev/null 2>&1 || fail "Git installation did not complete"
+find_python || fail "Python 3.11+ is unavailable from this system package manager"
 
 umask 077
 TEMP_DIR="$(mktemp -d)"
@@ -38,7 +98,7 @@ if [[ ! -d "${RELEASE_DIR}" ]]; then
 fi
 
 if [[ ! -x "${RELEASE_DIR}/.venv/bin/python" ]]; then
-  "${PYTHON_BIN}" -m venv "${RELEASE_DIR}/.venv"
+  "${PYTHON_BIN}" -m venv "${RELEASE_DIR}/.venv" || fail "Python venv support is unavailable"
 fi
 "${RELEASE_DIR}/.venv/bin/python" -m pip install --quiet --upgrade pip
 "${RELEASE_DIR}/.venv/bin/python" -m pip install --quiet --upgrade "${RELEASE_DIR}"

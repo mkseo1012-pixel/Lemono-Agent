@@ -2,9 +2,15 @@
 
 Lemono is a local-first personal AI agent that remembers, checks its own health, and adapts to each user without silently rewriting its code or expanding its permissions.
 
-## One-line install / 원라인 설치
+## One-line install / 원라이너 설치
 
-macOS, Linux, WSL 터미널에서 아래 명령 하나로 설치하고 설정할 수 있습니다. Install and configure Lemono on macOS, Linux, or WSL with one command:
+Windows PowerShell — WSL이 필요하지 않으며 Python이 없으면 WinGet으로 자동 설치합니다. No WSL required; missing Python is installed automatically with WinGet:
+
+```powershell
+irm https://raw.githubusercontent.com/mkseo1012-pixel/Lemono-Agent/main/scripts/install.ps1 | iex
+```
+
+macOS, Linux, WSL — Git, Python, venv가 없으면 지원되는 패키지 관리자로 자동 설치합니다. Missing Git, Python, and venv support are installed with a supported package manager:
 
 ```bash
 curl -fsSL https://raw.githubusercontent.com/mkseo1012-pixel/Lemono-Agent/main/scripts/install.sh | bash
@@ -27,18 +33,26 @@ The design takes inspiration from the public ideas behind Hermes Agent—persist
 
 ### 요구 사항
 
-- Python 3.11 이상 또는 Docker
+- Windows 10/11 PowerShell 또는 지원되는 macOS/Linux/WSL 환경
+- Windows 자동 설치에는 WinGet(Microsoft App Installer) 필요
+- Linux/macOS 자동 설치에는 `apt`, `dnf`, `yum`, `pacman`, `apk`, Homebrew 중 하나 필요
 - OpenAI, xAI, Anthropic, Google 중 하나 이상의 API 키
 
 ### 로컬 설치
 
-터미널 원 라이너(macOS, Linux, WSL):
+Windows PowerShell 원라이너(WSL 불필요):
+
+```powershell
+irm https://raw.githubusercontent.com/mkseo1012-pixel/Lemono-Agent/main/scripts/install.ps1 | iex
+```
+
+macOS, Linux, WSL 원라이너:
 
 ```bash
 curl -fsSL https://raw.githubusercontent.com/mkseo1012-pixel/Lemono-Agent/main/scripts/install.sh | bash
 ```
 
-설치 과정에서 바로 모델 공급자와 API 키를 설정할 수 있습니다. 나중에 다시 설정하려면 `lemono setup`을 실행하세요. 다운로드할 스크립트를 먼저 검토하려면 URL을 브라우저에서 열거나 파일로 내려받은 뒤 실행하세요.
+설치기는 필요한 Python 3.11+, Git, venv 지원을 먼저 확인하고 가능한 경우 자동 설치합니다. Windows PowerShell 설치는 WSL을 사용하지 않습니다. 설치 과정에서 바로 모델 공급자와 API 키를 설정할 수 있으며, 나중에 `lemono setup`으로 다시 설정할 수 있습니다. 시스템 패키지 설치에는 관리자 승인이나 `sudo` 암호가 필요할 수 있습니다.
 
 수동 설치:
 
@@ -101,18 +115,26 @@ curl http://localhost:8000/v1/diagnostics
 
 ### Requirements
 
-- Python 3.11 or newer, or Docker
+- Windows 10/11 PowerShell, or a supported macOS/Linux/WSL environment
+- WinGet (Microsoft App Installer) for automatic prerequisite installation on Windows
+- One of `apt`, `dnf`, `yum`, `pacman`, `apk`, or Homebrew for automatic setup on Unix
 - At least one API key from OpenAI, xAI, Anthropic, or Google
 
 ### Local installation
 
-Terminal one-liner (macOS, Linux, and WSL):
+Windows PowerShell one-liner (WSL is not required):
+
+```powershell
+irm https://raw.githubusercontent.com/mkseo1012-pixel/Lemono-Agent/main/scripts/install.ps1 | iex
+```
+
+macOS, Linux, and WSL one-liner:
 
 ```bash
 curl -fsSL https://raw.githubusercontent.com/mkseo1012-pixel/Lemono-Agent/main/scripts/install.sh | bash
 ```
 
-The installer can configure a model provider and API key immediately. Run `lemono setup` any time to change the configuration. If you prefer to audit downloaded scripts first, open the URL or download the file before running it.
+The installer checks for Python 3.11+, Git, and venv support and installs missing prerequisites when possible. The native PowerShell installer does not use WSL. It can configure a model provider and API key immediately; run `lemono setup` any time to change them. Installing system packages may request administrator approval or a `sudo` password.
 
 Manual installation:
 
