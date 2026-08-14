@@ -7,10 +7,11 @@ from typing import Any
 from pydantic import BaseModel, ConfigDict, Field
 
 
-def _load_dotenv(path: Path = Path(".env")) -> None:
-    """Load a minimal KEY=VALUE file without overriding the process environment."""
+def read_dotenv(path: Path) -> dict[str, str]:
+    """Read a minimal KEY=VALUE file. Invalid names and comments are ignored."""
+    values: dict[str, str] = {}
     if not path.is_file():
-        return
+        return values
     for raw_line in path.read_text(encoding="utf-8").splitlines():
         line = raw_line.strip()
         if not line or line.startswith("#") or "=" not in line:
@@ -18,7 +19,14 @@ def _load_dotenv(path: Path = Path(".env")) -> None:
         key, value = line.split("=", 1)
         key = key.strip()
         if key.replace("_", "").isalnum():
-            os.environ.setdefault(key, value.strip().strip("'\""))
+            values[key] = value.strip().strip("'\"")
+    return values
+
+
+def _load_dotenv(path: Path) -> None:
+    """Load a minimal KEY=VALUE file without overriding the process environment."""
+    for key, value in read_dotenv(path).items():
+        os.environ.setdefault(key, value)
 
 
 class Settings(BaseModel):
@@ -34,7 +42,11 @@ class Settings(BaseModel):
     allowed_origins: str = "http://localhost:3000,http://localhost:5173"
 
     def __init__(self, **data: Any):
-        _load_dotenv()
+        _load_dotenv(Path(".env"))
+        configured_dir = Path(
+            data.get("data_dir", os.environ.get("LEMONO_DATA_DIR", "~/.lemono"))
+        ).expanduser()
+        _load_dotenv(configured_dir / ".env")
         fields = type(self).model_fields
         for name, field in fields.items():
             env_name = f"LEMONO_{name.upper()}"

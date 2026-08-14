@@ -22,6 +22,16 @@ The design takes inspiration from the public ideas behind Hermes Agent—persist
 
 ### 로컬 설치
 
+터미널 원 라이너(macOS, Linux, WSL):
+
+```bash
+curl -fsSL https://raw.githubusercontent.com/mkseo1012-pixel/Lemono-Agent/main/scripts/install.sh | bash
+```
+
+설치 과정에서 바로 모델 공급자와 API 키를 설정할 수 있습니다. 나중에 다시 설정하려면 `lemono setup`을 실행하세요. 다운로드할 스크립트를 먼저 검토하려면 URL을 브라우저에서 열거나 파일로 내려받은 뒤 실행하세요.
+
+수동 설치:
+
 ```bash
 git clone https://github.com/mkseo1012-pixel/Lemono-Agent.git
 cd Lemono-Agent
@@ -85,6 +95,16 @@ curl http://localhost:8000/v1/diagnostics
 - At least one API key from OpenAI, xAI, Anthropic, or Google
 
 ### Local installation
+
+Terminal one-liner (macOS, Linux, and WSL):
+
+```bash
+curl -fsSL https://raw.githubusercontent.com/mkseo1012-pixel/Lemono-Agent/main/scripts/install.sh | bash
+```
+
+The installer can configure a model provider and API key immediately. Run `lemono setup` any time to change the configuration. If you prefer to audit downloaded scripts first, open the URL or download the file before running it.
+
+Manual installation:
 
 ```bash
 git clone https://github.com/mkseo1012-pixel/Lemono-Agent.git

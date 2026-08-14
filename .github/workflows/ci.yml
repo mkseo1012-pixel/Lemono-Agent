@@ -16,4 +16,14 @@ jobs:
       - run: pip install -e '.[dev]'
       - run: ruff check .
       - run: pytest -q
-
+      - run: bash -n scripts/install.sh
+      - name: Smoke test one-line installer
+        env:
+          LEMONO_REPOSITORY_URL: ${{ github.server_url }}/${{ github.repository }}.git
+          LEMONO_REF: ${{ github.head_ref || github.ref_name }}
+          LEMONO_INSTALL_DIR: ${{ runner.temp }}/lemono-install
+          LEMONO_BIN_DIR: ${{ runner.temp }}/lemono-bin
+          LEMONO_NO_SETUP: "1"
+        run: |
+          bash scripts/install.sh
+          "${LEMONO_BIN_DIR}/lemono" --doctor
